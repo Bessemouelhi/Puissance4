@@ -1,10 +1,10 @@
-import { createMachine } from 'xstate';
+import { createMachine, interpret, InterpreterFrom } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { GridState, Player, PlayerColor } from '../types';
+import { GameContext, GridState, Player, PlayerColor } from '../types';
 import { canJoinGuard, canLeaveGuard } from './guards';
 import { joinGameAction, leaveGameAction } from './actions';
 
-enum GameStates {
+export enum GameStates {
     LOBBY = 'LOBBY',
     PLAY = 'PLAY',
     VICTORY = 'VICTORY',
@@ -82,3 +82,14 @@ export const GameMachine = GameModel.createMachine({
         }
     }
 })
+
+
+export function makeGame (state: GameStates = GameStates.LOBBY, context: Partial<GameContext> = {}): InterpreterFrom<typeof GameMachine> {
+    return interpret(GameMachine.withContext({
+        ...GameModel.initialContext,
+        ...context
+    }).withConfig({
+        ...GameMachine.config,
+        initial: state
+    } as any)).start()
+}
