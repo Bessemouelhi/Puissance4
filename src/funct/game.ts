@@ -24,9 +24,26 @@ export function winingPositions(grid: GridState, color: PlayerColor, x: number, 
 
     for(let direction of directions) {
         let items = [position]
+        for (let forward of [1, -1])
         for(let i = 1 ; i < size ; i++) {
-            const x = position.x + (i * direction[1])
-            const y = position.y + (i * direction[1])
+            const x = position.x + (i * direction[0] * forward)
+            const y = position.y + (i * direction[1] * forward)
+            if(grid[y][x] !== color){
+                break;
+            }
+            items.push({x, y})
+        }
+        if (items.length >= size) {
+            return items
         }
     }
+    return []
+}
+
+export function currentPlayer(context: GameContext): Player {
+    const player = context.players.find(p => p.id === context.currentPlayer)
+    if (player === undefined){
+        throw new Error("Impossible de récupérer le joueur courant")
+    }
+    return player
 }

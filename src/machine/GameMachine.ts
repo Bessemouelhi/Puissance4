@@ -1,7 +1,7 @@
 import { actions, interpret, InterpreterFrom } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { GameContext, GridState, Player, PlayerColor } from '../types';
-import { canDropGuard, canJoinGuard, canLeaveGuard } from './guards';
+import { canDropGuard, canJoinGuard, canLeaveGuard, isWiningMoveGuard } from './guards';
 import { dropTokenAction, joinGameAction, leaveGameAction, switchPlayerAction } from './actions';
 
 export enum GameStates {
@@ -61,14 +61,22 @@ export const GameMachine = GameModel.createMachine({
         },
         [GameStates.PLAY]: {
             on: {
-                dropToken: {
+                dropToken: [
+                    {
+                        cond: isWiningMoveGuard,
+                        target: GameStates.VICTORY,
+                        actions: [
+                            GameModel.assign(dropTokenAction)
+                        ]
+                    },
+                    {
                     cond: canDropGuard,
                     target: GameStates.PLAY,
                     actions: [
                         GameModel.assign(dropTokenAction),
                         GameModel.assign(switchPlayerAction)
                     ]
-                },
+                }],
             }
         },
         [GameStates.VICTORY]: {
