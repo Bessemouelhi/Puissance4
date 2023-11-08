@@ -20,8 +20,10 @@ export const canStartGameGuard: GameGuard<"start"> = (context, event) => {
 }
 
 export const canDropGuard: GameGuard<"dropToken"> = (context, event) => {
+    console.log();
+    
     return event.x < context.grid[0].length
         && event.x >= 0
-        && context.currentPlayers === event.playerId
+        && context.currentPlayer === event.playerId
         && freePositionY(context.grid, event.x) >= 0
 }
