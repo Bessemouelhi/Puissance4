@@ -96,7 +96,6 @@ export const GameMachine = GameModel.createMachine({
     }
 })
 
-
 export function makeGame (state: GameStates = GameStates.LOBBY, context: Partial<GameContext> = {}): InterpreterFrom<typeof GameMachine> {
     const machine = interpret(
         GameMachine.withContext({
